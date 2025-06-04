@@ -1,0 +1,218 @@
+/* checkInCheckOut.css */
+:host {
+    --primary-color: #0176d3;
+    --secondary-color: #f3f7fb;
+    --success-color: #2e844a;
+    --error-color: #c23934;
+    --text-color: #2e3648;
+    --border-radius: 8px;
+    --border-color: #e5e5e5;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    touch-action: none; /* Disable all touch actions */
+    -ms-touch-action: none;
+    overflow: auto; /* Allow scrolling via overflow instead */
+}
+
+/* Enable specific touch actions only where needed */
+.slds-p-around_medium {
+    touch-action: pan-y; /* Only allow vertical scrolling */
+    -ms-touch-action: pan-y;
+}
+
+/* Card styling */
+lightning-card {
+    --slds-c-card-color-border: var(--border-color);
+    --slds-c-card-radius-border: var(--border-radius);
+    --slds-c-card-shadow: var(--box-shadow);
+    position: relative;
+}
+
+/* Section titles */
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 0.75rem;
+    background-color: var(--secondary-color);
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+}
+
+/* Details container */
+.details-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Field container */
+.field-container {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+/* Field labels */
+.field-label {
+    font-weight: 600;
+    color: var(--text-color);
+    display: inline-block;
+    width: 40%;
+}
+
+/* Field values */
+.field-value {
+    color: #444;
+}
+
+/* Special requests field might be longer */
+.special-requests {
+    display: block;
+    padding-top: 0.25rem;
+    white-space: pre-line;
+    max-height: 3rem;
+    overflow-y: auto;
+}
+
+/* Action container */
+.action-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+}
+
+/* Buttons */
+.search-button,
+.check-in-button,
+.check-out-button {
+    width: 100%;
+    touch-action: manipulation; /* Allow button touches */
+    -ms-touch-action: manipulation;
+}
+
+.check-in-button {
+    --slds-c-button-brand-color-background: var(--success-color);
+    --slds-c-button-brand-color-border: var(--success-color);
+}
+
+.check-out-button {
+    --slds-c-button-brand-color-background: var(--error-color);
+    --slds-c-button-brand-color-border: var(--error-color);
+}
+
+/* Input fields */
+.input-field {
+    margin-bottom: 0.5rem;
+    touch-action: manipulation; /* Allow input touches */
+    -ms-touch-action: manipulation;
+}
+
+/* Re-enable touch actions specifically for input elements */
+lightning-input {
+    touch-action: manipulation;
+    -ms-touch-action: manipulation;
+}
+
+lightning-input input, 
+lightning-input textarea,
+lightning-input select {
+    touch-action: manipulation !important;
+    -ms-touch-action: manipulation !important;
+    -webkit-touch-callout: none;
+    user-select: text !important;
+}
+
+/* QR code container */
+.qr-container {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.qr-image {
+    max-width: 150px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: white;
+}
+
+.qr-info {
+    color: var(--text-color);
+    margin-top: 0.5rem;
+}
+
+/* Placeholder for QR code */
+.placeholder-container {
+    height: 150px;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    margin: 1rem;
+}
+
+.placeholder-text {
+    color: #999;
+    text-align: center;
+}
+
+/* Spinner container */
+.spinner-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all; /* Capture all events when visible */
+    touch-action: none; /* Disable touch actions */
+    -ms-touch-action: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-col {
+        padding: 0.5rem;
+    }
+    
+    .slds-size_1-of-2 {
+        width: 100%;
+    }
+    
+    .field-label {
+        width: 50%;
+    }
+    
+    /* Additional mobile fixes */
+    :host {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    lightning-input {
+        margin-bottom: 16px;
+    }
+}
+
+.qr-code {
+    max-width: 150px;
+    margin: 0 auto;
+}
+.status-checked-in {
+    color: #04844b;
+    font-weight: bold;
+}
+.status-new {
+    color: #706e6b;
+    font-weight: bold;
+}

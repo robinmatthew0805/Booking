@@ -1,0 +1,163 @@
+/* guestPromoViewer.css */
+:host {
+    --primary-color: #4f9eb8;
+    --secondary-color: #f3f7fb;
+    --accent-color: #ffc107;
+    --text-color: #2e3648;
+    --light-text: #6c757d;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Card styling */
+lightning-card {
+    --slds-c-card-color-border: #e5e5e5;
+    --slds-c-card-radius-border: var(--border-radius);
+    --slds-c-card-shadow: var(--box-shadow);
+    --slds-c-card-heading-font-weight: 600;
+}
+
+/* Promotions container */
+.promotions-container {
+    padding-bottom: 1.5rem;
+}
+
+/* Filter section */
+.filter-section {
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+}
+
+/* Promotion card */
+.promo-card {
+    position: relative;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.promo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Promotion badge */
+.promo-badge {
+    position: absolute;
+    top: 0;
+    right: 1.5rem;
+    background-color: var(--accent-color);
+    color: #000;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.discount-text {
+    font-size: 1.25rem;
+}
+
+.discount-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+/* Promotion header */
+.promo-header {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.promo-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    padding-right: 5rem;
+}
+
+.promo-validity {
+    color: var(--light-text);
+    font-size: 0.875rem;
+}
+
+/* Promotion details */
+.promo-details {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.detail-value {
+    margin-bottom: 0.75rem;
+}
+
+.room-types {
+    color: var(--primary-color);
+}
+
+.additional-info {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #eaeaea;
+}
+
+/* Promotion action */
+.promo-action {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}
+
+/* Book button */
+.book-button {
+    --slds-c-button-brand-color-background: var(--primary-color);
+    --slds-c-button-brand-color-border: var(--primary-color);
+    --slds-c-button-text-color: white;
+    width: 100%;
+}
+
+/* Spinner container */
+.spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-medium-size_1-of-2,
+    .slds-large-size_1-of-3 {
+        width: 100%;
+    }
+    
+    .promo-grid {
+        display: block;
+    }
+}

@@ -1,0 +1,22 @@
+<template>
+    <lightning-card title="QR Code Generator">
+        <div class="slds-m-around_medium">
+            <lightning-input label="Enter Text" value={inputValue} onchange={handleInputChange}></lightning-input>
+            <lightning-button 
+                label="Generate Encrypted QR" 
+                onclick={generateEncryptedQR} 
+                variant="brand"
+                class="slds-m-top_medium">
+            </lightning-button>
+
+            <template if:true={encryptedValue}>
+                <p><strong>Encrypted Value:</strong> {encryptedValue}</p>
+            </template>
+
+            <template if:true={qrCodeUrl}>
+                <p><strong>QR Code:</strong></p>
+                <img src={qrCodeUrl} alt="QR Code">
+            </template>
+        </div>
+    </lightning-card>
+</template>

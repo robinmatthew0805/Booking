@@ -1,0 +1,192 @@
+/* serviceRequest.css */
+:host {
+    --primary-color: #546e7a;
+    --primary-hover: #455a64;
+    --secondary-color: #f3f7fb;
+    --success-color: #2e844a;
+    --text-color: #2e3648;
+    --light-text: #6c757d;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Card styling */
+lightning-card {
+    --slds-c-card-color-border: #e5e5e5;
+    --slds-c-card-radius-border: var(--border-radius);
+    --slds-c-card-shadow: var(--box-shadow);
+    --slds-c-card-heading-font-weight: 600;
+    --slds-c-card-heading-color-background: var(--primary-color);
+    --slds-c-card-heading-color: white;
+    --slds-c-icon-color-foreground: white;
+}
+
+/* Form container */
+.form-container {
+    padding: 1rem 0;
+}
+
+/* Form sections */
+.form-section {
+    background-color: white;
+    border-radius: var(--border-radius);
+    border: 1px solid #e5e5e5;
+    padding: 1.25rem;
+    height: 100%;
+    transition: box-shadow 0.3s ease;
+}
+
+.form-section:hover {
+    box-shadow: var(--box-shadow);
+}
+
+/* Section titles */
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: 0.75rem;
+    background-color: var(--secondary-color);
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+}
+
+/* Field containers for readonly fields */
+.field-container {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.field-label {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--light-text);
+    margin-bottom: 0.125rem;
+}
+
+.field-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Service cost display */
+.service-cost-container {
+    padding: 0.75rem;
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+    border: 1px dashed #cfd8dc;
+}
+
+.service-cost-label {
+    font-size: 0.875rem;
+    color: var(--light-text);
+    margin-bottom: 0.25rem;
+}
+
+.service-cost-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Terms container */
+.terms-container {
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: var(--border-radius);
+}
+
+/* Button container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+}
+
+/* Confirmation modal styling */
+.confirmation-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.confirmation-message {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--text-color);
+}
+
+/* Spinner styling */
+.spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Override button styling */
+lightning-button[variant="brand"] {
+    --slds-c-button-brand-color-background: var(--primary-color);
+    --slds-c-button-brand-color-border: var(--primary-color);
+    --slds-c-button-brand-color-background-hover: var(--primary-hover);
+}
+
+/* Input focus styling */
+lightning-input:focus-within,
+lightning-combobox:focus-within,
+lightning-textarea:focus-within {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+
+/* Fix for select dropdown overlap */
+lightning-combobox {
+    position: relative;
+    z-index: 2;
+}
+
+lightning-combobox:focus-within {
+    z-index: 3;
+}
+
+/* Increasing spacing between input fields for better separation */
+lightning-input,
+lightning-combobox,
+lightning-textarea {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Ensure dropdown is visible and doesn't get cut off */
+.slds-dropdown {
+    z-index: 9000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-size_1-of-2 {
+        width: 100%;
+    }
+    
+    .form-section {
+        margin-bottom: 1rem;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .button-container lightning-button {
+        margin: 0.5rem 0;
+    }
+}

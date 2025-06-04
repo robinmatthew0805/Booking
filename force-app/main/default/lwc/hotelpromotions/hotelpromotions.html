@@ -1,0 +1,123 @@
+<template>
+    <div class="slds-card">
+        <div class="slds-card__header">
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <h2 class="slds-card__header-title slds-text-heading_medium slds-truncate slds-m-right_small">
+                    <span>Promotions & Advertisements</span>
+                </h2>
+                <div class="slds-no-flex">
+                    <lightning-button label="New Promo" variant="brand" icon-name="utility:add" 
+                                    onclick={handleCreatePromo}>
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Promo Tickets Section -->
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={hasPromos}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <template for:each={promos} for:item="promo">
+                        <div key={promo.Id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-p-around_small">
+                            <div class="promo-ticket">
+                                <div class="promo-ticket-header">
+                                    <div class="promo-name">{promo.Promo_Name__c}</div>
+                                    <div class="promo-discount">{promo.Discount_Percentage__c}%</div>
+                                </div>
+                                <div class="promo-ticket-body">
+                                    <div class="promo-details">
+                                        <p><lightning-icon icon-name="utility:user" size="x-small"></lightning-icon> <span>Target: {promo.Target_Customers__c}</span></p>
+                                        <p><lightning-icon icon-name="utility:home" size="x-small"></lightning-icon> <span>Room Types: {promo.Applicable_Room_Types__c}</span></p>
+                                        <p><lightning-icon icon-name="utility:date_time" size="x-small"></lightning-icon> <span>Valid: 
+                                            <lightning-formatted-date-time value={promo.Start_Date__c} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                            to
+                                            <lightning-formatted-date-time value={promo.End_Date__c} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                        </span></p>
+                                    </div>
+                                </div>
+                                <div class="promo-ticket-footer">
+                                    <lightning-button-group>
+                                        <lightning-button-icon icon-name="utility:preview" variant="border-filled" 
+                                                         alternative-text="View" 
+                                                         title="View"
+                                                         data-id={promo.Id}
+                                                         onclick={handleViewPromo}>
+                                        </lightning-button-icon>
+                                        <lightning-button-icon icon-name="utility:edit" variant="border-filled" 
+                                                         alternative-text="Edit" 
+                                                         title="Edit"
+                                                         data-id={promo.Id}
+                                                         onclick={handleEditPromo}>
+                                        </lightning-button-icon>
+                                        <lightning-button-icon icon-name="utility:delete" variant="border-filled" 
+                                                         alternative-text="Delete" 
+                                                         title="Delete"
+                                                         data-id={promo.Id}
+                                                         onclick={handleDeletePromo}>
+                                        </lightning-button-icon>
+                                    </lightning-button-group>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template if:false={hasPromos}>
+                <div class="slds-illustration slds-illustration_small">
+                    <div class="slds-text-longform">
+                        <p class="slds-text-body_regular">No active promotions</p>
+                    </div>
+                </div>
+            </template>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="slds-card slds-m-around_medium">
+            <div class="slds-card__header">
+                <h3 class="slds-card__header-title">
+                    <span class="slds-text-heading_small">Search Promotions</span>
+                </h3>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-form" role="group">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-form-element slds-m-bottom_small">
+                            <label class="slds-form-element__label">Promo Name</label>
+                            <div class="slds-form-element__control">
+                                <input type="text" class="slds-input" placeholder="Enter promo name" 
+                                       onkeyup={handlePromoNameChange} />
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-form-element slds-m-bottom_small">
+                            <label class="slds-form-element__label">Target Customer</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-select_container">
+                                    <select class="slds-select" onchange={handleTargetCustomerChange}>
+                                        <option value="">All</option>
+                                        <option value="New">New Customers</option>
+                                        <option value="Returning">Returning Customers</option>
+                                        <option value="VIP">VIP Customers</option>
+                                        <option value="Corporate">Corporate Clients</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-form-element slds-m-bottom_small">
+                            <label class="slds-form-element__label">Active Date</label>
+                            <div class="slds-form-element__control">
+                                <lightning-input type="date" onchange={handleActiveDateChange}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-grid slds-grid_align-end slds-p-top_small">
+                        <lightning-button label="Clear" variant="neutral" class="slds-m-right_small" onclick={handleClearPromoSearch}></lightning-button>
+                        <lightning-button label="Search" variant="brand" icon-name="utility:search" onclick={handleSearchPromos}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

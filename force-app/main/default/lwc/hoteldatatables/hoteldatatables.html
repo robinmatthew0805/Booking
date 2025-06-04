@@ -1,0 +1,203 @@
+<template>
+    <div class="slds-card">
+        <div class="slds-card__header slds-grid slds-grid_align-spread slds-p-around_medium">
+            <h2 class="slds-card__header-title slds-text-heading_medium">
+                <span>Hotel Management Dashboard</span>
+            </h2>
+        </div>
+        
+        <!-- Tabbed Interface -->
+        <div class="slds-tabs_default">
+            <ul class="slds-tabs_default__nav" role="tablist">
+                <li class="slds-tabs_default__item" title="Reservations" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="0" 
+                       aria-controls="tab-default-1" id="tab-default-1__item" onclick={handleTabSelect} data-tab-id="reservations">
+                        Upcoming Reservations
+                    </a>
+                </li>
+                <li class="slds-tabs_default__item slds-is-active" title="Check-ins & Check-outs" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="true" 
+                       aria-controls="tab-default-2" id="tab-default-2__item" onclick={handleTabSelect} data-tab-id="checkinout">
+                        Today's Check-ins & Check-outs
+                    </a>
+                </li>
+                <li class="slds-tabs_default__item" title="Search" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" 
+                       aria-controls="tab-default-3" id="tab-default-3__item" onclick={handleTabSelect} data-tab-id="search">
+                        Search
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Upcoming Reservations Tab Content -->
+            <div id="tab-default-1" class="slds-tabs_default__content" role="tabpanel" 
+                 aria-labelledby="tab-default-1__item" style={reservationsTabStyle}>
+                <div class="slds-text-heading_small slds-m-bottom_medium">
+                </div>
+                
+                <div class="slds-p-horizontal_medium slds-p-vertical_small">
+                    <template if:true={hasUpcomingReservations}>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={upcomingReservations}
+                            columns={upcomingReservationsColumns}
+                            hide-checkbox-column
+                            resize-column-disabled
+                            onrowaction={handleRowAction}>
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={hasUpcomingReservations}>
+                        <div class="slds-illustration slds-illustration_small slds-p-around_medium">
+                            <div class="slds-text-longform">
+                                <p class="slds-text-body_regular">No upcoming reservations</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Check-ins & Check-outs Tab Content -->
+            <div id="tab-default-2" class="slds-tabs_default__content slds-show" role="tabpanel" 
+                 aria-labelledby="tab-default-2__item" style={checkinoutTabStyle}>
+                <div class="slds-grid slds-wrap slds-p-around_medium">
+                    <!-- Today's Check-ins -->
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-right_medium-only">
+                        <div class="slds-card">
+                            <div class="slds-card__header slds-theme_shade slds-p-around_small">
+                                <h3 class="slds-card__header-title">
+                                    <span class="slds-text-heading_small">Today's Check-ins</span>
+                                </h3>
+                            </div>
+                            <div class="slds-card__body">
+                                <template if:true={hasCheckIns}>
+                                    <lightning-datatable
+                                        key-field="Id"
+                                        data={checkIns}
+                                        columns={checkInsColumns}
+                                        hide-checkbox-column
+                                        resize-column-disabled
+                                        onrowaction={handleRowAction}>
+                                    </lightning-datatable>
+                                </template>
+                                <template if:false={hasCheckIns}>
+                                    <div class="slds-illustration slds-illustration_small slds-p-around_medium">
+                                        <div class="slds-text-longform">
+                                            <p class="slds-text-body_regular">No check-ins scheduled for today</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's Check-outs -->
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-left_medium-only">
+                        <div class="slds-card">
+                            <div class="slds-card__header slds-theme_shade slds-p-around_small">
+                                <h3 class="slds-card__header-title">
+                                    <span class="slds-text-heading_small">Today's Check-outs</span>
+                                </h3>
+                            </div>
+                            <div class="slds-card__body">
+                                <template if:true={hasCheckOuts}>
+                                    <lightning-datatable
+                                        key-field="Id"
+                                        data={checkOuts}
+                                        columns={checkOutsColumns}
+                                        hide-checkbox-column
+                                        resize-column-disabled
+                                        onrowaction={handleRowAction}>
+                                    </lightning-datatable>
+                                </template>
+                                <template if:false={hasCheckOuts}>
+                                    <div class="slds-illustration slds-illustration_small slds-p-around_medium">
+                                        <div class="slds-text-longform">
+                                            <p class="slds-text-body_regular">No check-outs scheduled for today</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Tab Content -->
+            <div id="tab-default-3" class="slds-tabs_default__content" role="tabpanel" 
+                 aria-labelledby="tab-default-3__item" style={searchTabStyle}>
+                <div class="slds-form slds-p-around_medium" role="group">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-form-element slds-m-bottom_small">
+                            <label class="slds-form-element__label">Search Type</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-select_container">
+                                    <select class="slds-select" onchange={handleSearchTypeChange}>
+                                        <option value="reservation">Reservation</option>
+                                        <option value="guest">Guest</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-form-element slds-m-bottom_small">
+                            <label class="slds-form-element__label">Search Term</label>
+                            <div class="slds-form-element__control">
+                                <input type="text" class="slds-input" placeholder="Name, Booking #, Room, etc." 
+                                       onkeyup={handleSearchTermChange} />
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-form-element slds-m-bottom_small">
+                            <label class="slds-form-element__label">Date Range</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <lightning-input type="date" label="From" variant="label-hidden" placeholder="From" onchange={handleDateFromChange}></lightning-input>
+                                    </div>
+                                    <div class="slds-col">
+                                        <lightning-input type="date" label="To" variant="label-hidden" placeholder="To" onchange={handleDateToChange}></lightning-input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-grid slds-grid_align-end slds-p-top_small">
+                        <lightning-button label="Clear" variant="neutral" class="slds-m-right_small" onclick={handleClearSearch}></lightning-button>
+                        <lightning-button label="Search" variant="brand" icon-name="utility:search" onclick={handleSearch}></lightning-button>
+                    </div>
+                </div>
+                
+                <!-- Search Results Section -->
+                <div class="slds-p-horizontal_medium slds-p-vertical_small">
+                    <template if:true={hasSearchResults}>
+                        <div class="slds-p-top_medium">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Search Results</h3>
+                            <lightning-datatable
+                                key-field="Id"
+                                data={searchResults}
+                                columns={currentSearchResultsColumns}
+                                hide-checkbox-column
+                                resize-column-disabled
+                                onrowaction={handleRowAction}>
+                            </lightning-datatable>
+                        </div>
+                    </template>
+                </div>
+                
+                <template if:true={isSearching}>
+                    <div class="slds-is-relative slds-p-around_medium">
+                        <lightning-spinner alternative-text="Searching..." size="medium"></lightning-spinner>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <div class="slds-backdrop slds-backdrop_open">
+            <lightning-spinner alternative-text="Loading..." size="large"></lightning-spinner>
+        </div>
+    </template>
+</template>

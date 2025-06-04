@@ -1,0 +1,101 @@
+<template>
+    <div class="landing-page">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">CloudStay: Smart Hotel Experience</h1>
+                <p class="hero-subtitle">Transforming hospitality with AI-powered personalization and convenience</p>
+                <div class="hero-buttons">
+                    <lightning-button 
+                        variant="brand" 
+                        label="Book Smart Stay" 
+                        title="Book Your Smart Stay" 
+                        onclick={navigateToBooking}
+                        class="hero-button book-now">
+                    </lightning-button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="section-header">
+                <h2>Our Smart Features</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:event" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Seamless Booking</h3>
+                    <p>Book your stay with our AI-powered system</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:check_in" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Mobile Check-In</h3>
+                    <p>Skip the front desk with contactless check-in</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:connected_apps" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Smart Room Controls</h3>
+                    <p>Control room features from your mobile device</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Experience the Future of Hotel Stays</h2>
+                <p>Sign up to receive updates and exclusive offers</p>
+                <div class="cta-form">
+                    <lightning-input 
+                        type="email" 
+                        label="Email"
+                        placeholder="Enter your email address"
+                        variant="label-hidden"
+                        value={emailValue}
+                        onchange={handleEmailChange}>
+                    </lightning-input>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Get Early Access" 
+                        title="Get Early Access" 
+                        onclick={handleSubscribe}
+                        class="cta-button">
+                    </lightning-button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CloudStay Smart Hotel</h3>
+                    <p>Experience the future of hospitality</p>
+                </div>
+                <div class="footer-section social-section">
+                    <div class="social-icons">
+                        <a href="#" onclick={navigateToSocial} data-social="facebook">
+                            <lightning-icon icon-name="utility:facebook" size="small"></lightning-icon>
+                        </a>
+                        <a href="#" onclick={navigateToSocial} data-social="instagram">
+                            <lightning-icon icon-name="utility:instagram" size="small"></lightning-icon>
+                        </a>
+                        <a href="#" onclick={navigateToSocial} data-social="twitter">
+                            <lightning-icon icon-name="utility:twitter" size="small"></lightning-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 CloudStay Systems. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+</template>

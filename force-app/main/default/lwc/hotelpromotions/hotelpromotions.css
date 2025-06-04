@@ -1,0 +1,53 @@
+.promo-ticket {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.promo-ticket-header {
+    background: #0070d2;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.25rem 0.25rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.promo-name {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.promo-discount {
+    background: #ffffff;
+    color: #0070d2;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+}
+
+.promo-ticket-body {
+    padding: 0.75rem;
+    flex-grow: 1;
+}
+
+.promo-details p {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.promo-details lightning-icon {
+    margin-right: 0.5rem;
+}
+
+.promo-ticket-footer {
+    padding: 0.75rem;
+    border-top: 1px solid #dddbda;
+    display: flex;
+    justify-content: flex-end;
+}

@@ -1,0 +1,23 @@
+.banner {
+    background: linear-gradient(135deg, #0073e6, #00c6ff);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+.banner-title {
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.banner-subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+}

@@ -1,0 +1,102 @@
+<template>
+    <template lwc:if={scanContinuously}>
+        <!-- Static help text -->
+        <div class="slds-text-align_center slds-text-color_weak slds-m-vertical_large">
+            <p>{scannerInstructions}</p>
+        </div>
+
+        <!-- Scan button -->
+        <div class="slds-align_absolute-center slds-m-vertical_large">
+            <lightning-button 
+                variant="brand" 
+                class="slds-var-m-left_x-small" 
+                icon-name={buttonIcon} 
+                label={buttonLabel}
+                title="Start scanning barcodes, until there are no more barcodes to scan"
+                onclick={beginScanning}>
+            </lightning-button>
+        </div>
+    </template>
+
+    <template if:false={scanContinuously}>
+        <div class="slds-grid slds-wrap slds-var-m-around_medium">
+            <!-- Original scanned value -->
+            <div class="slds-col slds-size_1-of-1 slds-p-around_medium slds-border_top slds-border_bottom">
+                <strong>{label}</strong>
+                <div class="slds-text-heading_small slds-truncate" title={scannedBarcode}>
+                    {scannedBarcode}
+                </div>
+            </div>
+
+            <!-- Decrypted value -->
+            <div class="slds-col slds-size_1-of-1 slds-p-around_medium slds-border_bottom">
+                <strong>Decrypted Value:</strong>
+                <div class="slds-text-heading_small slds-truncate" title={decryptedBarcode}>
+                    {decryptedBarcode}
+                </div>
+            </div>
+
+            <!-- Parsed JSON fields -->
+            <div class="slds-col slds-size_1-of-1 slds-p-around_medium slds-border_bottom">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <strong>Booking Number:</strong>
+                        <div class="slds-text-body_regular slds-truncate" title={bookingNumber}>
+                            {bookingNumber}
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <strong>Room Number:</strong>
+                        <div class="slds-text-body_regular slds-truncate" title={roomNumber}>
+                            {roomNumber}
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters slds-m-top_small">
+                    <div class="slds-col slds-size_1-of-2">
+                        <strong>Floor Number:</strong>
+                        <div class="slds-text-body_regular slds-truncate" title={floorNumber}>
+                            {floorNumber}
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <strong>Expiry Date:</strong>
+                        <div class="slds-text-body_regular slds-truncate" title={expiryDate}>
+                            {expiryDate}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiry status -->
+            <template if:true={expiryDate}>
+                <div class="slds-col slds-size_1-of-1 slds-p-around_medium slds-border_bottom">
+                    <div class={expiryStatusClass}>
+                        <lightning-icon icon-name={expiryStatusIcon} alternative-text="Status" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        <span>{expiryStatusMessage}</span>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Scrollable container for instructions -->
+        <div class="slds-scrollable_y slds-p-around_medium" style="max-height: 200px; overflow-y: auto;">
+            <div class="slds-text-align_center slds-text-color_weak">
+                {scannerInstructions}
+            </div>
+        </div>
+
+        <!-- Click-to-scan button -->
+        <div class="slds-align_absolute-center slds-m-vertical_large">
+            <lightning-button 
+                variant="brand" 
+                class="slds-var-m-left_x-small" 
+                disabled={scanButtonDisabled}
+                icon-name={buttonIcon} 
+                label={buttonLabel} 
+                title="Open a camera view and look for a barcode to scan"
+                onclick={handleBeginScanClick}>
+            </lightning-button>
+        </div>
+    </template>
+</template>

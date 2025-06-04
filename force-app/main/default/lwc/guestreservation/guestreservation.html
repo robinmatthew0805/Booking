@@ -1,0 +1,527 @@
+<template>
+    <lightning-card title="Hotel Reservation">
+        <div class="slds-p-around_medium">
+            <!-- Loading spinner -->
+            <template if:true={spinnerStatus}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+            
+            <!-- Date Summary (shown on all steps if dates are selected) -->
+            <template if:true={hasSelectedDates}>
+                <div class="slds-box slds-m-bottom_medium slds-theme_shade">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <p><strong>Check-in:</strong> {checkInDate}</p>
+                        </div>
+                        <div class="slds-col">
+                            <p><strong>Check-out:</strong> {checkOutDate}</p>
+                        </div>
+                        <template if:true={totalNights}>
+                            <div class="slds-col">
+                                <p><strong>Nights:</strong> {totalNights}</p>
+                            </div>
+                        </template>
+                        <template if:true={totalCost}>
+                            <div class="slds-col">
+                                <p><strong>Total Cost:</strong> {formattedTotalCost}</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            
+            <!-- Step 1: Date Selection -->
+            <div if:true={isDateSelectionStep}>
+                <div class="slds-text-heading_medium slds-m-bottom_medium">Select Check-in and Check-out Dates</div>
+                
+                <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input 
+                            type="date" 
+                            name="checkInDate" 
+                            label="Check-in Date" 
+                            value={checkInDate} 
+                            onchange={handleDateChange}
+                            min={minDate}
+                            required>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input 
+                            type="date" 
+                            name="checkOutDate" 
+                            label="Check-out Date" 
+                            value={checkOutDate} 
+                            onchange={handleDateChange}
+                            min={minCheckoutDate}
+                            disabled={checkoutDisabled}
+                            required>
+                        </lightning-input>
+                    </div>
+                </div>
+                
+                <div class="slds-m-top_medium">
+                    <lightning-button 
+                        variant="brand" 
+                        label="Search Available Rooms" 
+                        onclick={handleSearchRooms} 
+                        disabled={spinnerStatus}>
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Room Selection -->
+            <div if:true={isRoomSelectionStep}>
+                <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
+                    <div class="slds-text-heading_medium">Available Rooms</div>
+                    
+                    <div>
+                        <lightning-button 
+                            label={filterButtonLabel} 
+                            icon-name={filterIconName}
+                            onclick={handleToggleFilters}
+                            variant="neutral">
+                        </lightning-button>
+                    </div>
+                </div>
+                
+                <!-- Room Filters -->
+                <div if:true={showFilters} class="slds-box slds-theme_shade slds-m-bottom_medium room-filter">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">Filter Rooms</h3>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4 slds-p-around_xx-small">
+                            <lightning-combobox
+                                name="filterFloor"
+                                label="Floor"
+                                value={filterFloor}
+                                options={floorOptions}
+                                onchange={handleFilterChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4 slds-p-around_xx-small">
+                            <lightning-input
+                                name="filterRoomNumber"
+                                label="Room Number"
+                                value={filterRoomNumber}
+                                onchange={handleFilterChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4 slds-p-around_xx-small">
+                            <lightning-dual-listbox
+                                name="filterFeatures"
+                                label="Features"
+                                source-label="Available"
+                                selected-label="Selected"
+                                options={availableFeatures}
+                                value={filterFeatures}
+                                onchange={handleFeatureFilterChange}
+                                class="feature-filter">
+                            </lightning-dual-listbox>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_align-end slds-m-top_small">
+                        <lightning-button
+                            label="Clear Filters"
+                            onclick={handleClearFilters}
+                            variant="neutral"
+                            class="slds-m-right_small">
+                        </lightning-button>
+                    </div>
+                </div>
+                
+                <!-- Available Rooms -->
+                <div class="slds-grid slds-grid_vertical slds-m-bottom_medium">
+                    <template if:true={hasRooms}>
+                        <template for:each={processedRooms} for:item="room">
+                            <div key={room.Id} class="slds-box slds-m-bottom_small room-card">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_8-of-12">
+                                        <div class="slds-text-heading_small">{room.Room_Number__c}</div>
+                                        <div class="slds-m-top_xx-small">Room Type: {room.Room_Type__c}</div>
+                                        <div class="slds-m-top_xx-small">Price per Night: P{room.Price_Per_Night__c}</div>
+                                        <div class="slds-m-top_xx-small">Total for {totalNights} nights: {room.totalRoomCost}</div>
+                                        <div class="slds-m-top_xx-small">Floor: {room.Floor__c}</div>
+                                        <!-- Display features as badges -->
+                                        <div class="slds-m-top_xx-small room-features">
+                                            <template for:each={room.featuresArray} for:item="feature">
+                                                <lightning-badge key={feature} label={feature} class="slds-m-around_xx-small"></lightning-badge>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_4-of-12 slds-align_absolute-center">
+                                        <lightning-button 
+                                            variant="brand" 
+                                            label="Select Room" 
+                                            data-id={room.Id}
+                                            onclick={handleRoomSelection} 
+                                            disabled={spinnerStatus}>
+                                        </lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                    
+                    <!-- No Rooms Found Message -->
+                    <template if:true={hasNoMatchingRooms}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium slds-text-align_center">
+                            <p>No rooms match your current filters. Please adjust your filters or clear them to see all available rooms.</p>
+                            <lightning-button
+                                label="Clear Filters"
+                                onclick={handleClearFilters}
+                                variant="neutral"
+                                class="slds-m-top_small">
+                            </lightning-button>
+                        </div>
+                    </template>
+                    
+                    <!-- No Available Rooms Message -->
+                    <template if:true={noRoomsAvailable}>
+                        <div class="slds-text-align_center slds-m-top_medium">
+                            No rooms available for the selected dates.
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="slds-m-top_medium">
+                    <lightning-button 
+                        variant="neutral" 
+                        label="Back to Date Selection" 
+                        onclick={handleBack} 
+                        disabled={spinnerStatus}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Reservation Form -->
+            <div if:true={isReservationFormStep} class="reservation-form">
+                <div class="slds-text-heading_medium slds-m-bottom_medium">Reservation Details</div>
+                
+                <!-- Room and Price Summary (only in reservation step) -->
+                <div class="slds-box slds-m-bottom_medium slds-theme_info">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <p><strong>Room Type:</strong> {selectedRoomType}</p>
+                        </div>
+                        <div class="slds-col">
+                            <p><strong>Price per Night:</strong> P{selectedRoomPrice}</p>
+                        </div>
+                        <div class="slds-col">
+                            <p><strong>Nights:</strong> {totalNights}</p>
+                        </div>
+                        <div class="slds-col">
+                            <p><strong>Total Cost:</strong> {formattedTotalCost}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information Section -->
+                <div class="slds-text-heading_small slds-m-bottom_small">Guest Information</div>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small slds-m-bottom_small">
+                        <lightning-input 
+                            type="text" 
+                            label="First Name" 
+                            name="FirstName" 
+                            value={contact.FirstName} 
+                            onchange={handleContactChange} 
+                            required>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small slds-m-bottom_small">
+                        <lightning-input 
+                            type="text" 
+                            label="Last Name" 
+                            name="LastName" 
+                            value={contact.LastName} 
+                            onchange={handleContactChange} 
+                            required>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small slds-m-bottom_small">
+                        <lightning-input 
+                            type="email" 
+                            label="Email" 
+                            name="Email" 
+                            value={contact.Email} 
+                            onchange={handleContactChange} 
+                            required>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small slds-m-bottom_small">
+                        <lightning-input 
+                            type="tel" 
+                            label="Phone" 
+                            name="Phone" 
+                            value={contact.Phone} 
+                            onchange={handleContactChange} 
+                            required>
+                        </lightning-input>
+                    </div>
+                </div>
+                
+                <!-- Additional Reservation Details Section -->
+                <div class="slds-text-heading_small slds-m-bottom_small slds-m-top_medium">Additional Details</div>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-size_1-of-1 slds-p-horizontal_small slds-m-bottom_small">
+                        <lightning-textarea
+                            label="Special Requests"
+                            name="Special_Requests__c"
+                            value={reservation.Special_Requests__c}
+                            onchange={handleReservationChange}
+                            placeholder="Please let us know if you have any special requests or requirements">
+                        </lightning-textarea>
+                    </div>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="slds-m-top_medium">
+                    <lightning-button 
+                        variant="neutral" 
+                        label="Back to Room Selection" 
+                        onclick={handleBack} 
+                        disabled={spinnerStatus}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Proceed to Payment" 
+                        onclick={handleProceedToPayment} 
+                        disabled={spinnerStatus}>
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Payment -->
+            <div if:true={isPaymentStep}>
+                <div class="slds-text-heading_medium slds-m-bottom_medium">Payment</div>
+                
+                <!-- Payment processing overlay -->
+                <template if:true={isPaymentInProcess}>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                    <div class="slds-modal slds-modal_small slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <div class="slds-align_absolute-center slds-p-around_medium">
+                                    <lightning-spinner alternative-text="Processing payment" size="large"></lightning-spinner>
+                                </div>
+                                <div class="slds-text-heading_small slds-text-align_center slds-p-bottom_medium">
+                                    Processing payment, please wait...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Payment successful message -->
+                <template if:true={paymentComplete}>
+                    <div class="slds-box slds-theme_success slds-m-bottom_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">Payment Successful!</div>
+                        <p>Your reservation has been confirmed. You will receive a confirmation email shortly.</p>
+                        
+                        <div class="slds-m-top_medium">
+                            <lightning-button 
+                                variant="brand" 
+                                label="Make New Reservation" 
+                                onclick={resetFields} 
+                                class="slds-m-right_small">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Payment form - Only shown if payment not complete -->
+                <template if:false={paymentComplete}>
+                    <!-- Payment summary -->
+                    <div class="slds-box slds-m-bottom_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">Reservation Summary</div>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>Guest:</strong> {contact.FirstName} {contact.LastName}</p>
+                                <p><strong>Check-in:</strong> {checkInDate}</p>
+                                <p><strong>Check-out:</strong> {checkOutDate}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>Room Type:</strong> {selectedRoomType}</p>
+                                <p><strong>Nights:</strong> {totalNights}</p>
+                                <p class="slds-text-heading_small slds-text-color_success">
+                                    <strong>Amount to Pay:</strong> {formattedTotalCost}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method Selection -->
+                    <div class="slds-box slds-m-bottom_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_medium">Payment Method</div>
+                        
+                        <div class="slds-m-bottom_medium slds-align_absolute-center">
+                            <lightning-radio-group
+                                name="paymentMethod"
+                                label="Payment Method"
+                                options={paymentOptions}
+                                value={paymentMethod}
+                                onchange={handlePaymentMethodChange}
+                                type="radio">
+                            </lightning-radio-group>
+                        </div>
+                        
+                        <!-- PayPal Option -->
+                        <template if:true={isPayPalMethod}>
+                            <div class="slds-align_absolute-center slds-m-top_large">
+                                <img src="/resource/PayPalLogo" alt="PayPal" width="150" />
+                            </div>
+                            
+                            <div class="slds-m-top_medium slds-text-align_center">
+                                <p>You will be redirected to PayPal to complete your payment securely.</p>
+                            </div>
+                        </template>
+                        
+                        <!-- Card Payment Option -->
+                        <template if:true={isCardPaymentMethod}>
+                            <div class="card-payment-form slds-m-top_medium">
+                                <div class="slds-grid slds-gutters slds-wrap">
+                                    <!-- Credit Card Container with Card-like UI -->
+                                    <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12 slds-p-horizontal_small slds-m-bottom_medium">
+                                        <div class="slds-box slds-theme_shade card-container">
+                                            <div class="slds-text-heading_small slds-m-bottom_medium">Card Details</div>
+                                            
+                                            <!-- Card Number Field with Auto Formatting and Card Type Display -->
+                                            <div class="slds-form-element slds-m-bottom_medium">
+                                                <label class="slds-form-element__label" for="cardNumber">
+                                                    Card Number
+                                                    <template if:true={isCardTypeDetected}>
+                                                        <span class={cardTypeClass}>{detectedCardType}</span>
+                                                    </template>
+                                                </label>
+                                                <div class="slds-form-element__control">
+                                                    <lightning-input 
+                                                        type="text" 
+                                                        id="cardNumber"
+                                                        name="cardNumber" 
+                                                        placeholder="•••• •••• •••• ••••"
+                                                        maxlength="19"
+                                                        value={cardDetails.cardNumber}
+                                                        onkeyup={handleCardNumberFormat}
+                                                        onchange={handleCardDetailChange}
+                                                        onblur={handleCardNumberValidation}>
+                                                    </lightning-input>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Card holder name with validation -->
+                                            <div class="slds-form-element slds-m-bottom_medium">
+                                                <label class="slds-form-element__label" for="cardName">Cardholder Name</label>
+                                                <div class="slds-form-element__control">
+                                                    <lightning-input 
+                                                        type="text" 
+                                                        id="cardName"
+                                                        name="cardName" 
+                                                        placeholder="Name as it appears on card"
+                                                        value={cardDetails.cardName}
+                                                        onchange={handleCardDetailChange}
+                                                        onblur={handleCardholderNameValidation}>
+                                                    </lightning-input>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Combined Expiration Date and CVV in one row -->
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="cardExpiry">Expiration Date</label>
+                                                        <div class="slds-form-element__control">
+                                                            <lightning-input 
+                                                                type="text" 
+                                                                id="cardExpiry"
+                                                                name="cardExpiry" 
+                                                                placeholder="MM/YY"
+                                                                maxlength="5"
+                                                                value={formattedExpiry}
+                                                                onkeyup={handleExpiryFormat}
+                                                                onchange={handleExpiryChange}
+                                                                onblur={handleExpiryValidation}>
+                                                            </lightning-input>
+                                                            <div class="expiry-helper-text">Enter as MM/YY (e.g., 05/25)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <div class="slds-form-element">
+                                                        <label class="slds-form-element__label" for="cardCVV">Security Code (CVV)</label>
+                                                        <div class="slds-form-element__control">
+                                                            <lightning-input 
+                                                                type="text" 
+                                                                id="cardCVV"
+                                                                name="cardCVV" 
+                                                                placeholder="123"
+                                                                maxlength="4"
+                                                                value={cardDetails.cardCVV}
+                                                                onkeyup={handleCVVFormat}
+                                                                onchange={handleCardDetailChange}
+                                                                onblur={handleCVVValidation}>
+                                                            </lightning-input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-m-top_medium slds-text-align_center">
+                                            <p class="slds-text-color_success">All payment information is securely processed.</p>
+                                            <p class="slds-text-color_success slds-m-top_x-small">This is a simulation - any values will be accepted after validation.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Accepted Cards and Summary -->
+                                    <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12 slds-p-horizontal_small">
+                                        <div class="slds-box slds-theme_shade">
+                                            <div class="slds-text-heading_small slds-m-bottom_medium">Payment Summary</div>
+                                            <p class="slds-m-bottom_small"><strong>Amount:</strong> {formattedTotalCost}</p>
+                                            <p class="slds-m-bottom_small"><strong>Room:</strong> {selectedRoomType}</p>
+                                            <p class="slds-m-bottom_medium"><strong>Nights:</strong> {totalNights}</p>
+                                            
+                                            <div class="slds-text-heading_small slds-m-bottom_small slds-m-top_medium">Accepted Cards</div>
+                                            <div class="slds-grid slds-gutters slds-wrap">
+                                                <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                                    <div class="card-logo visa">Visa</div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                                    <div class="card-logo mastercard">Mastercard</div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                                    <div class="card-logo amex">American Express</div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                                    <div class="card-logo discover">Discover</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        
+                        <div class="slds-m-top_medium slds-text-align_center">
+                            <lightning-button 
+                                variant="neutral" 
+                                label="Cancel" 
+                                onclick={handleCancelPayment} 
+                                disabled={paymentProcessing}
+                                class="slds-m-right_small">
+                            </lightning-button>
+                            <lightning-button 
+                                variant="brand" 
+                                label={paymentButtonLabel}
+                                onclick={handleProcessPayment} 
+                                disabled={paymentProcessing}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

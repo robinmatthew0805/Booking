@@ -1,0 +1,302 @@
+<!-- Check In/Check Out Component HTML Template -->
+<template>
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+    
+    <!-- Search Form -->
+    <div class="slds-card slds-m-bottom_medium">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:search" alternative-text="Search"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span>Find Reservation</span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-around_small">
+                    <lightning-input 
+                        label="Booking Number" 
+                        name="bookingNumber" 
+                        value={bookingNumber} 
+                        onchange={handleBookingNumberChange} 
+                        required>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-around_small">
+                    <lightning-input 
+                        label="Guest Name" 
+                        name="guestName" 
+                        value={guestName} 
+                        onchange={handleGuestNameChange} 
+                        required>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-around_small">
+                    <lightning-input 
+                        label="PIN Number" 
+                        name="pinNumber" 
+                        type="password" 
+                        value={pinNumber} 
+                        onchange={handlePinNumberChange} 
+                        maxlength="6" 
+                        required>
+                    </lightning-input>
+                </div>
+            </div>
+            <div class="slds-grid slds-grid_align-center slds-m-top_medium">
+                <lightning-button 
+                    variant="brand" 
+                    label="Search" 
+                    onclick={searchReservation} 
+                    class="slds-m-around_x-small">
+                </lightning-button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- No data found message -->
+    <template if:true={noDataFound}>
+        <div class="slds-box slds-theme_shade slds-m-vertical_medium slds-text-align_center">
+            <p class="slds-text-heading_small">No active reservation found with the provided details.</p>
+            <p class="slds-text-body_regular slds-m-top_small">
+                Please verify your booking number, guest name, and PIN number.
+            </p>
+        </div>
+    </template>
+    
+    <!-- Reservation Details Section -->
+    <template if:true={hasReservationData}>
+        <div class="slds-card slds-m-bottom_medium">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:household" alternative-text="Reservation"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span>Reservation Details</span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+                        <dl class="slds-dl_horizontal">
+                            <dt class="slds-dl_horizontal__label slds-truncate">Guest Name:</dt>
+                            <dd class="slds-dl_horizontal__detail">{reservation.guestName}</dd>
+                            
+                            <dt class="slds-dl_horizontal__label slds-truncate">Room Number:</dt>
+                            <dd class="slds-dl_horizontal__detail">{reservation.roomNumber}</dd>
+                            
+                            <dt class="slds-dl_horizontal__label slds-truncate">Room Type:</dt>
+                            <dd class="slds-dl_horizontal__detail">{reservation.roomType}</dd>
+                        </dl>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+                        <dl class="slds-dl_horizontal">
+                            <dt class="slds-dl_horizontal__label slds-truncate">Check-in Date:</dt>
+                            <dd class="slds-dl_horizontal__detail">{reservation.checkInDate}</dd>
+                            
+                            <dt class="slds-dl_horizontal__label slds-truncate">Check-out Date:</dt>
+                            <dd class="slds-dl_horizontal__detail">{reservation.checkOutDate}</dd>
+                            
+                            <dt class="slds-dl_horizontal__label slds-truncate">Status:</dt>
+                            <dd class="slds-dl_horizontal__detail">
+                                <span class={statusClass}>{reservation.status}</span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                <!-- Special Requests Section -->
+                <template if:true={reservation.specialRequests}>
+                    <div class="slds-box slds-theme_shade slds-m-top_medium">
+                        <h3 class="slds-text-heading_small">Special Requests</h3>
+                        <p class="slds-m-top_x-small">{reservation.specialRequests}</p>
+                    </div>
+                </template>
+                
+                <!-- Check-in Section -->
+                <template if:true={isNotCheckedIn}>
+                    <div class="slds-box slds-theme_shade slds-m-top_medium">
+                        <h3 class="slds-text-heading_small">Check-in</h3>
+                        <div class="slds-m-top_medium slds-text-align_center">
+                            <lightning-button 
+                                variant="success" 
+                                label="Check In" 
+                                onclick={handleCheckIn} 
+                                class="slds-m-around_x-small">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Check-out Section -->
+                <template if:true={isCheckedIn}>
+                    <div class="slds-box slds-theme_shade slds-m-top_medium">
+                        <h3 class="slds-text-heading_small">Room Key</h3>
+                        <div class="slds-grid slds-gutters slds-wrap slds-m-top_small">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_center">
+                                <template if:true={qrCodeUrl}>
+                                    <img src={qrCodeUrl} alt="Room Key QR Code" class="qr-code" />
+                                    <p class="slds-text-body_small slds-m-top_x-small">
+                                        Scan this QR code with the door reader.
+                                    </p>
+                                </template>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-text-body_regular slds-m-top_x-small">
+                                    <p><strong>Room:</strong> {reservation.roomNumber}</p>
+                                    <p><strong>Floor:</strong> {floorNumber}</p>
+                                    <p><strong>Guest:</strong> {reservation.guestName}</p>
+                                    <p><strong>Valid Until:</strong> {expiryDate}</p>
+                                </div>
+                                <div class="slds-m-top_medium slds-text-align_center">
+                                    <lightning-button 
+                                        variant="destructive" 
+                                        label="Check Out" 
+                                        onclick={handleCheckOut} 
+                                        class="slds-m-around_x-small">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Checkout Confirmation Modal -->
+    <template if:true={showCheckoutConfirmation}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCancelCheckout}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirm Checkout</h2>
+                </header>
+                
+                <!-- Body -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>Are you sure you want to check out this guest?</p>
+                    <p class="slds-m-top_small">
+                        <strong>Booking Number:</strong> {bookingNumber}
+                    </p>
+                    <p>
+                        <strong>Guest Name:</strong> {reservation.guestName}
+                    </p>
+                    <p>
+                        <strong>Room Number:</strong> {reservation.roomNumber}
+                    </p>
+                    <p class="slds-text-color_error slds-m-top_medium">
+                        This action cannot be undone. The room key will be deactivated.
+                    </p>
+                </div>
+                
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={handleCancelCheckout}>Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={handleConfirmCheckout}>Confirm Checkout</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+    <!-- Feedback Form Modal -->
+    <template if:true={showFeedbackForm}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Loading Spinner for Form -->
+                <template if:true={isFormLoading}>
+                    <lightning-spinner alternative-text="Submitting feedback" size="medium"></lightning-spinner>
+                </template>
+                
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Please Rate Your Stay</h2>
+                </header>
+                
+                <!-- Body -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element">
+                            <lightning-combobox 
+                                name="Overall_Rating__c" 
+                                label="Overall Experience" 
+                                value={feedbackData.Overall_Rating__c} 
+                                options={ratingOptions} 
+                                onchange={handleFeedbackFieldChange}
+                                required>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-combobox 
+                                name="Room_Cleanliness_Rating__c" 
+                                label="Room Cleanliness" 
+                                value={feedbackData.Room_Cleanliness_Rating__c} 
+                                options={ratingOptions} 
+                                onchange={handleFeedbackFieldChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-combobox 
+                                name="Staff_Service_Rating__c" 
+                                label="Staff Service" 
+                                value={feedbackData.Staff_Service_Rating__c} 
+                                options={ratingOptions} 
+                                onchange={handleFeedbackFieldChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-combobox 
+                                name="Value_For_Money_Rating__c" 
+                                label="Value for Money" 
+                                value={feedbackData.Value_For_Money_Rating__c} 
+                                options={ratingOptions} 
+                                onchange={handleFeedbackFieldChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-input 
+                                type="checkbox" 
+                                label="Would you recommend our hotel to others?" 
+                                name="Would_Recommend__c" 
+                                checked={feedbackData.Would_Recommend__c} 
+                                onchange={handleFeedbackFieldChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-form-element slds-m-top_small">
+                            <lightning-textarea 
+                                name="Comments__c" 
+                                label="Additional Comments" 
+                                value={feedbackData.Comments__c} 
+                                onchange={handleFeedbackFieldChange}>
+                            </lightning-textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={handleSkipFeedback}>Skip Feedback</button>
+                    <button class="slds-button slds-button_brand" onclick={handleSubmitFeedback}>Submit Feedback</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
